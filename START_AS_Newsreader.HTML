@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playful News Feeder</title>
+    <style>
+        :root {
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+        }
+
+        [data-theme="blue"] {
+            --primary-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(45, 55, 90, 0.85);
+            --text-primary: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --border-color: #4a5568;
+            --accent-color: #5a67d8;
+        }
+
+        [data-theme="dark"] {
+            --primary-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: rgba(28, 37, 54, 0.75);
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0b0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-color: #00d1ff;
+        }
+
+        [data-theme="green"] {
+            --primary-bg: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            --card-bg: rgba(50, 80, 60, 0.85);
+            --text-primary: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --border-color: #3f6249;
+            --accent-color: #27ae60;
+        }
+        
+        [data-theme="purple"] {
+            --primary-bg: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            --card-bg: rgba(70, 50, 80, 0.85);
+            --text-primary: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --border-color: #614271;
+            --accent-color: #9b59b6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-bg);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 { 
+            text-align: center;
+            color: var(--text-primary); 
+            margin-bottom: 20px; 
+            font-size: 2.5em; 
+            font-weight: 700;
+            text-shadow: 0 0 8px color-mix(in srgb, var(--accent-color) 40%, transparent);
+        }
+
+        .nav-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .nav-tab { padding: 10px 20px;
+            background: transparent; border: 2px solid var(--border-color); border-radius: 25px; cursor: pointer; transition: all 0.3s ease; font-weight: 600; color: var(--text-primary);
+        }
+        .nav-tab.active { background: var(--accent-color); color: black; border-color: var(--accent-color);
+        }
+        .nav-tab:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent-color);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .controls { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: center;
+            margin-bottom: 20px; }
+
+        .control-group { display: flex; flex-direction: column; gap: 5px;
+        }
+        .control-group label { font-weight: 600; color: var(--text-secondary); font-size: 0.9em;
+        }
+
+        input, select, button, textarea { padding: 10px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 14px; transition: all 0.3s ease; background: color-mix(in srgb, var(--card-bg) 50%, black); color: var(--text-primary);
+        }
+        textarea { min-height: 60px; resize: vertical;
+        }
+
+        input:focus, select:focus, textarea:focus { 
+            outline: none; 
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent);
+        }
+
+        button { 
+            background: linear-gradient(45deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 60%, black)); 
+            color: black;
+            border: none; 
+            cursor: pointer; 
+            font-weight: 700; 
+            min-width: 100px;
+            text-shadow: none;
+        }
+        button:hover { 
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3); 
+        }
+        button:active { transform: translateY(0) scale(1); box-shadow: none;
+        }
+
+        .btn-success { background: linear-gradient(45deg, var(--success-color), color-mix(in srgb, var(--success-color) 70%, black)); color: white;
+        }
+        .btn-danger { background: linear-gradient(45deg, var(--danger-color), color-mix(in srgb, var(--danger-color) 70%, black)); color: white;
+        }
+        .btn-warning { background: linear-gradient(45deg, var(--warning-color), color-mix(in srgb, var(--warning-color) 70%, black)); color: black;
+        }
+        .btn-info { background: linear-gradient(45deg, var(--info-color), color-mix(in srgb, var(--info-color) 70%, black)); color: white;
+        }
+        .btn-secondary { background: linear-gradient(45deg, #6c757d, #343a40); color: white;
+        }
+
+        .panel { background: color-mix(in srgb, var(--card-bg) 70%, transparent); border-radius: 10px; padding: 20px;
+            margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .panel h3 { margin-top: 0; margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 10px; 
+            color: var(--accent-color);
+        }
+
+        .settings-row { display: flex; flex-wrap: wrap;
+            gap: 20px; align-items: center; margin-bottom: 15px; }
+        .theme-selector { display: flex; gap: 10px;
+        }
+        .theme-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border-color);
+            cursor: pointer; transition: all 0.3s ease; }
+        .theme-btn.active { border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 40%, transparent);
+            transform: scale(1.1);
+        }
+        .theme-blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .theme-green { background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+        }
+        .theme-purple { background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+        }
+        .theme-dark { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .category-selector { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;
+        }
+        .category-btn { padding: 8px 16px; background: color-mix(in srgb, var(--card-bg) 50%, black); border: 1px solid var(--border-color);
+            border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 0.9em; color: var(--text-secondary); user-select: none;
+        }
+        .category-btn.active { background: var(--accent-color); color: black; border-color: var(--accent-color); font-weight: bold;
+        }
+        .category-selector-info { font-size: 0.8em; color: var(--text-secondary); margin-bottom: 20px; text-align: center;
+        }
+
+        .source-list-container { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;
+            padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-color); }
+        .source-list-item { display: flex; align-items: center;
+            gap: 15px; padding: 10px; border-radius: 6px; background: transparent; transition: background 0.3s;
+        }
+        .source-list-item:hover { background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+        }
+        .source-list-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent-color); cursor: pointer;
+        }
+        .source-list-item-label { flex-grow: 1; display: flex; flex-direction: column; cursor: pointer;
+        }
+        .source-list-item-title { font-weight: 600; color: var(--text-primary);
+        }
+        .source-list-item-category { font-size: 0.8em; color: var(--text-secondary); background: rgba(0,0,0,0.2); padding: 2px 6px;
+            border-radius: 10px; align-self: flex-start; }
+        .source-list-item .remove-btn { background: var(--danger-color); border: none;
+            color: white; border-radius: 50%; width: 25px; height: 25px; line-height: 25px; padding: 0; font-size: 14px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; min-width: auto; flex-shrink: 0; }
+        .source-list-item .remove-btn:hover { background: color-mix(in srgb, var(--danger-color) 80%, black);
+        }
+        
+        .news-grid { display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-top: 20px; }
+        .news-item { 
+            background: var(--card-bg);
+            border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color); 
+            position: relative; 
+            display: flex; 
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .news-item:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 15px color-mix(in srgb, var(--accent-color) 20%, transparent);
+            border-color: var(--accent-color);
+        }
+        .news-item.breaking { border-left-color: var(--danger-color); animation: pulse 2s infinite;
+        }
+        .news-item-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            margin-bottom: 0;
+        }
+        .news-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .news-item p {
+            color: var(--text-secondary); margin-bottom: 15px; line-height: 1.6; font-size: 0.95em;
+        }
+        .read-more-btn {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger-color) 40%, transparent);
+        } 70% { box-shadow: 0 0 0 10px color-mix(in srgb, var(--danger-color) 0%, transparent);
+        } 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger-color) 0%, transparent);
+        } }
+        
+        .news-item h3 { color: var(--text-primary); margin-bottom: 10px; font-size: 1.2em; line-height: 1.4;
+        }
+        .news-item h3 a { color: var(--text-primary); text-decoration: none; transition: color 0.3s;
+        }
+        .news-item h3 a:hover { color: var(--accent-color);
+        }
+        .news-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.9em; color: var(--text-secondary);
+            margin-bottom: 10px; }
+        .news-source { background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+            color: var(--accent-color); padding: 3px 8px; border-radius: 10px; font-size: 0.8em; font-weight: 600;
+        }
+        .news-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 15px;
+        }
+        .news-actions button { padding: 5px 10px; font-size: 0.8em; min-width: auto;
+        }
+        .news-actions button.bookmarked { background: linear-gradient(45deg, var(--warning-color), color-mix(in srgb, var(--warning-color) 70%, black));
+        }
+
+        .loading, .info-message { text-align: center; padding: 40px; color: var(--text-primary); font-size: 1.2em;
+            background: var(--card-bg); border-radius: 15px; }
+        
+        .bookmark-item { background: transparent;
+            border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 15px;
+        }
+         .bookmark-item:hover { background: color-mix(in srgb, var(--accent-color) 10%, transparent); }
+        .bookmark-info { font-size: 0.8em; color: var(--text-secondary); margin-top: 5px;
+        }
+        .bookmark-item a { color: var(--text-primary); font-weight: 600; text-decoration: none;
+        }
+        .bookmark-item a:hover { color: var(--accent-color);
+        }
+        .bookmark-content { flex: 1;
+        }
+        .bookmark-actions { display: flex; gap: 10px;
+        }
+        .bookmark-actions button { padding: 5px 10px; font-size: 0.8em; min-width: auto;
+        }
+        
+        .file-input { display: none;
+        }
+        .file-label { display: inline-block; padding: 10px 20px;
+            background: linear-gradient(45deg, var(--success-color), color-mix(in srgb, var(--success-color) 70%, black)); color: white; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; font-weight: 600;
+        }
+        .file-label:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;
+        }
+        .stat-item { text-align: center; padding: 15px;
+            background: var(--card-bg); 
+            border: 1px solid var(--accent-color);
+            color: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .stat-number { font-size: 2em; font-weight: bold; margin-bottom: 5px; color: var(--accent-color);
+        }
+        
+        .breaking-badge { position: absolute;
+            top: 10px; right: 10px; background: var(--danger-color); color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.7em; font-weight: bold;
+            animation: blink 1.5s infinite alternate; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 2;
+        }
+        @keyframes blink { from { transform: scale(1); opacity: 1; } to { transform: scale(1.05); opacity: 0.8;
+        } }
+        
+        #notification-area { position: fixed;
+            bottom: 20px; right: 20px; z-index: 1001; display: flex; flex-direction: column; gap: 10px;
+        }
+        .notification { padding: 15px 20px; color: white; border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2); animation: slideInUp 0.5s ease-out; opacity: 0; transform: translateY(20px);
+        }
+        .notification.show { opacity: 1; transform: translateY(0);
+        }
+        @keyframes slideInUp { to { opacity: 1; transform: translateY(0);
+        } }
+        .notification.success { background: var(--success-color);
+        }
+        .notification.error { background: var(--danger-color);
+        }
+        .notification.info { background: var(--info-color);
+        }
+        
+        .filter-row { display: flex;
+            flex-wrap: wrap; gap: 15px; align-items: center; margin-bottom: 15px; }
+        #searchFilter { flex: 1;
+            min-width: 200px; }
+        
+        .trust-indicator { margin-left: 8px;
+            font-size: 1em; vertical-align: middle; cursor: help; }
+        .trust-high { color: var(--success-color);
+        }
+        .trust-review { color: var(--warning-color);
+        }
+        .trust-low { color: var(--danger-color);
+        }
+
+        .finance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
+        }
+        .finance-card { background: color-mix(in srgb, var(--card-bg) 70%, transparent); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px;
+        }
+        .finance-card h3 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
+            margin-bottom: 15px;}
+        .crypto-list, .stock-list { display: flex; flex-direction: column; gap: 10px;
+        }
+        .crypto-item, .stock-item { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 15px; font-size: 1.1em; padding: 8px; border-radius: 6px;
+        }
+        .crypto-item:hover, .stock-item:hover { background: color-mix(in srgb, var(--accent-color) 10%, transparent); }
+
+        .crypto-item img { width: 32px; height: 32px;
+        }
+        .crypto-name, .stock-symbol { font-weight: bold; flex-grow: 1;
+        }
+        .crypto-price, .stock-price-info { text-align: right;
+        }
+        .price-eur, .stock-price { font-weight: 600; font-size: 1em;
+        }
+        .price-usd, .stock-change { font-size: 0.85em; color: var(--text-secondary);
+        }
+        .stock-item .remove-btn { background: var(--danger-color); border: none; color: white; border-radius: 50%; width: 25px; height: 25px; line-height: 25px; padding: 0; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; min-width: auto; flex-shrink: 0; }
+        .price-up { color: var(--success-color) !important; }
+        .price-down { color: var(--danger-color) !important; }
+
+        /* Anleitung Tab Styles */
+        .help-content { line-height: 1.8;
+        }
+        .help-content h4 { color: var(--accent-color); margin-top: 20px; margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .help-content p { margin-bottom: 10px;
+        }
+        .help-content ul { list-style-position: inside; padding-left: 20px; margin-bottom: 15px;
+        }
+        .help-content li { margin-bottom: 8px;
+        }
+        .help-content code { background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; font-family: monospace;
+        }
+        
+        /* Vorschlagsquellen Styles */
+        .suggested-source-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: background 0.3s;
+        }
+        .suggested-source-item:hover {
+            background: rgba(0,0,0,0.25);
+        }
+        .suggested-source-item button {
+            min-width: auto;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            font-size: 16px;
+            line-height: 30px;
+            flex-shrink: 0;
+        }
+        .suggested-source-item button:disabled {
+            background: var(--success-color);
+            cursor: default;
+            opacity: 0.7;
+        }
+        #suggestedSourcesContainer h4 {
+            color: var(--text-secondary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+
+        @media (max-width: 768px) {
+            .container { padding: 10px;
+            }
+            .header h1 { font-size: 2em;
+            }
+            .controls, .settings-row, .filter-row { flex-direction: column; align-items: stretch;
+            }
+            .control-group { width: 100%;
+            }
+            .news-grid { grid-template-columns: 1fr;
+            }
+            .nav-tabs { justify-content: space-around;
+            }
+            .nav-tab { padding: 8px 12px; font-size: 0.9em;
+            }
+            .bookmark-item { flex-direction: column; align-items: flex-start;
+            }
+            .finance-grid { grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 data-lang-key="appTitle">🎨 Playful News Feeder</h1>
+            
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="news" data-lang-key="tabNews">📰 Nachrichten</div>
+                <div class="nav-tab" data-tab="finance" data-lang-key="tabFinance">💰 Finanzen</div>
+                <div class="nav-tab" data-tab="sources" data-lang-key="tabSources">🔧 Quellen</div>
+                <div class="nav-tab" data-tab="bookmarks" data-lang-key="tabBookmarks">🔖 Bookmarks</div>
+                <div class="nav-tab" data-tab="settings" data-lang-key="tabSettings">⚙️ Einstellungen</div>
+                <div class="nav-tab" data-tab="stats" data-lang-key="tabStats">📊 Statistiken</div>
+                <div class="nav-tab" data-tab="help" data-lang-key="tabHelp">❓ Anleitung</div>
+            </div>
+
+            <div id="news-tab" class="tab-content active">
+                 <div class="controls">
+                    <button onclick="loadAllNews()" class="btn-success" data-lang-key="btnLoadNews">🔄 Nachrichten laden</button>
+                    <button onclick="clearAllNews()" 
+                        class="btn-secondary" data-lang-key="btnClearDisplay">🗑️ Anzeige leeren</button>
+                </div>
+                <div id="newsContainer">
+                    <div class="info-message" data-lang-key="initialMessage">🚀 Wähle Quellen aus, lade Nachrichten und filtere sie nach deinen Wünschen.</div>
+                </div>
+            </div>
+
+   
+            <div id="finance-tab" class="tab-content">
+                <div class="panel">
+                    <div class="tradingview-widget-container">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                        { "symbols": [ { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" }, { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" }, { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" }, { "description": "DAX", "proName": "XETR:DAX" }, { "description": "Bitcoin/EUR", "proName": "BITSTAMP:BTCEUR" } ], "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "de" }
+                      </script>
+                    </div>
+                </div>
+                <div class="finance-grid">
+                     <div class="finance-card">
+                        <h3 data-lang-key="stockPortfolio">Mein Aktien-Portfolio</h3>
+                        <div class="controls" style="margin-bottom: 20px; justify-content: flex-start;">
+                            <div class="control-group" style="flex-grow: 1;"><input type="text" id="stockSymbol" placeholder="z.B. AAPL, GOOGL"></div>
+                            <button onclick="addStock()" data-lang-key="addStockBtn">➕ Hinzufügen</button>
+                        </div>
+                        <div class="stock-list" id="stockPortfolioContainer">
+                            </div>
+                    </div>
+                    <div class="finance-card">
+                        <h3 data-lang-key="cryptoPrices">Kryptowährungen</h3>
+                        <div class="crypto-list" id="cryptoPricesContainer">
+                            <div class="loading">Lade Kurse...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="sources-tab" class="tab-content">
+                <div class="panel">
+                    <h3 data-lang-key="addSourcePanel">Neue Quelle hinzufügen</h3>
+                    
+                    <div class="controls">
+                        <div class="control-group"><label data-lang-key="sourceUrlLabel">RSS-Feed URL:</label><input type="text" id="sourceUrl" placeholder="https://example.com/rss"></div>
+                        <div class="control-group"><label data-lang-key="sourceTitleLabel">Titel:</label><input type="text" id="sourceTitle" data-lang-key="sourceTitlePlaceholder" placeholder="Anzeigename"></div>
+                        <div class="control-group">
+                            <label data-lang-key="categoryLabel">Kategorie:</label>
+                            <select id="sourceCategory">
+                                <option value="world" data-lang-key="catWorld">Welt</option>
+                                <option value="germany" data-lang-key="catGermany">Deutschland</option>
+                                <option value="berlin">Berlin</option>
+                                <option value="politics" data-lang-key="catPolitics">Politik</option>
+                                <option value="eu" data-lang-key="catEu">EU-Recht</option>
+                                <option value="police" data-lang-key="catPolice">Polizei</option>
+                                <option value="usa">USA</option>
+                                <option value="war" data-lang-key="catWar">Konflikte</option>
+                                <option value="tech">Tech</option>
+                                <option value="sport">Sport</option>
+                                <option value="gossip" data-lang-key="catGossip">Gossip</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+         
+                            <label data-lang-key="trustLabel">Vertrauenswürdigkeit:</label>
+                            <select id="sourceTrust">
+                                <option value="high" data-lang-key="trustHigh">Vertrauenswürdig</option>
+                                <option value="normal" data-lang-key="trustNormal" selected>Normal</option>
+                                <option value="review" data-lang-key="trustReview">Extra prüfen</option>
+                                <option value="low" data-lang-key="trustLow">Eher vermeiden</option>
+                            </select>
+                        </div>
+                        <button onclick="addSource()" data-lang-key="btnAdd">➕ Hinzufügen</button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h3 data-lang-key="suggestedSources">Vorschlagsquellen</h3>
+                    <p data-lang-key="suggestedSourcesInfo" style="font-size: 0.9em;
+                        color: var(--text-secondary); margin-bottom: 15px;">Klicken Sie auf '➕', um eine Quelle zu Ihrer Liste hinzuzufügen.</p>
+                    <div id="suggestedSourcesContainer" style="max-height: 300px;
+                        overflow-y: auto; padding-right: 10px;">
+                        </div>
+                </div>
+
+                <div class="panel">
+             
+                    <h3 data-lang-key="manageSources">📡 Meine Quellen (Aktivieren/Deaktivieren)</h3>
+                    <div class="source-list-container" id="sourceListContainer">
+                        </div>
+                
+                </div>
+            </div>
+
+            <div id="bookmarks-tab" class="tab-content">
+                <div class="panel">
+                    <h3 data-lang-key="savedArticles">🔖 Gespeicherte Artikel</h3>
+                     <div class="bookmark-info" data-lang-key="bookmarkInfo">Gespeicherte Artikel bleiben dauerhaft erhalten, bis sie manuell gelöscht werden.</div>
+  
+                    <div class="controls">
+                        <button onclick="clearBookmarks()" class="btn-danger" data-lang-key="btnDeleteAll">🗑️ Alle löschen</button>
+                        <button onclick="exportBookmarks('json')" class="btn-info" data-lang-key="btnExportJson">📤 JSON Export</button>
+                        <button onclick="exportBookmarks('html')" class="btn-warning" data-lang-key="btnExportHtml">🌐 HTML Export</button>
+                        <button onclick="exportBookmarks('csv')" class="btn-success" data-lang-key="btnExportCsv">📊 CSV Export</button>
+                    </div>
+                    <div id="bookmarksList"><div class="info-message" data-lang-key="noBookmarks">Keine Artikel gespeichert.</div></div>
+                </div>
+    
+            </div>
+
+            <div id="settings-tab" class="tab-content">
+                 <div class="panel">
+                    <h3 data-lang-key="viewFilters">Ansichts-Filter</h3>
+                    <div id="category-selector-container" class="category-selector">
+                 
+                        <div class="category-btn active" data-category="all" data-lang-key="catAll">🌍 Alle</div>
+                        <div class="category-btn" data-category="breaking" data-lang-key="catBreaking">🚨 Eilmeldungen</div>
+                        <div class="category-btn" data-category="berlin">🏛️ Berlin</div>
+                        <div class="category-btn" data-category="germany">🇩🇪 Deutschland</div>
+      
+                        <div class="category-btn" data-category="politics" data-lang-key="catPolitics">🏛️ Politik</div>
+                        <div class="category-btn" data-category="eu" data-lang-key="catEu">🇪🇺 EU-Recht</div>
+                        <div class="category-btn" data-category="police" data-lang-key="catPolice">🚓 Polizei</div>
+                      
+                        <div class="category-btn" data-category="world" data-lang-key="catWorld">🌍 Welt</div>
+                        <div class="category-btn" data-category="usa">🇺🇸 USA</div>
+                        <div class="category-btn" data-category="war" data-lang-key="catWar">💥 Konflikte</div>
+                        <div class="category-btn" data-category="tech">💻 Tech</div>
+            
+                        <div class="category-btn" data-category="sport">⚽ Sport</div>
+                        <div class="category-btn" data-category="gossip" data-lang-key="catGossip">🤫 Gossip</div>
+                    </div>
+                    <div class="category-selector-info" data-lang-key="categoryInfo">Wähle eine oder mehrere Kategorien aus, um die Anzeige zu filtern.</div>
+
+     
+                    <div class="filter-row">
+                        <input type="text" id="searchFilter" data-lang-key="searchPlaceholder" placeholder="Geladene Artikel durchsuchen..." onkeyup="renderNews(false)">
+                        <select id="dateFilter" onchange="renderNews(true)">
+                           
+                            <option value="all" data-lang-key="dateAll">Alle Zeiten</option>
+                            <option value="today" data-lang-key="dateToday">Letzte 24h</option>
+                            <option value="week" data-lang-key="dateWeek">Letzte 7 Tage</option>
+                            <option value="month" data-lang-key="dateMonth">Letzte 30 Tage</option>
+ 
+                        </select>
+                        <select id="sourceFilter" onchange="renderNews(true)">
+                            <option value="all" data-lang-key="sourceAll">Alle Quellen</option>
+                    
+                        </select>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3 data-lang-key="designAndDisplay">🎨 Design & Anzeige</h3>
+                   
+                    <div class="settings-row">
+                        <label data-lang-key="themeLabel">Theme:</label>
+                        <div class="theme-selector">
+                            <div class="theme-btn theme-dark" data-theme="dark" title="Dunkel" onclick="setTheme('dark')"></div>
+                            <div class="theme-btn theme-blue" data-theme="blue" title="Blau (Standard)" onclick="setTheme('blue')"></div>
+                            <div class="theme-btn theme-green" data-theme="green" title="Grün" onclick="setTheme('green')"></div>
+                            <div class="theme-btn theme-purple" data-theme="purple" title="Lila" onclick="setTheme('purple')"></div>
+                        </div>
+                    </div>
+                     <div class="settings-row">
+                        <label data-lang-key="languageLabel">Sprache:</label>
+                        
+                        <select id="languageSelector" onchange="setLanguage(this.value)">
+                            <option value="de">Deutsch</option>
+                            <option value="en">English</option>
+                            <option value="ru">Русский</option>
+           
+                        </select>
+                    </div>
+                </div>
+                <div class="panel">
+                     <h3 data-lang-key="behaviorAndAutomation">⚙️ Verhalten & Automatisierung</h3>
+         
+                    <div class="settings-row">
+                        <div class="control-group"><label data-lang-key="autoRefreshLabel">🔄 Auto-Refresh (Minuten, 0=aus):</label><input type="number" id="refreshInterval" min="0" max="60" value="0"></div>
+                        <div class="control-group"><label data-lang-key="maxArticlesLabel">📰 Max Artikel pro Quelle:</label><input type="number" id="maxArticles" min="1" max="50" value="15"></div>
+                   
+                        <div class="control-group"><label data-lang-key="breakingKeywordsLabel">🚨 Eilmeldungen-Keywords (kommagetrennt):</label><textarea id="breakingKeywords"></textarea></div>
+                    </div>
+                    <div class="settings-row">
+                        <div class="control-group">
+                        
+                            <label data-lang-key="notificationsLabel">📧 Benachrichtigungen:</label>
+                            <select id="notificationSettings">
+                                <option value="none" data-lang-key="notifyNone">Keine</option>
+                               
+                                <option value="breaking" data-lang-key="notifyBreaking">Nur Eilmeldungen</option>
+                                <option value="all" data-lang-key="notifyAll">Alle neuen Artikel</option>
+                            </select>
+                        </div>
+        
+                        <div class="control-group"><label data-lang-key="soundLabel">🔊 Sound bei neuen Artikeln:</label><input type="checkbox" id="soundEnabled"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3 data-lang-key="dataManagement">📁 Daten-Management</h3>
+ 
+                    <div class="controls">
+                        <label class="file-label"><input type="file" class="file-input" accept=".json" onchange="importData(event, 'sources')"><span data-lang-key="btnImportSources">📂 Quellen importieren</span></label>
+                        <button onclick="exportData('sources')" class="btn-success" data-lang-key="btnExportSources">📤 Quellen exportieren</button>
+                  
+                        <button onclick="resetSettings()" class="btn-danger" data-lang-key="btnResetApp">🔄 App zurücksetzen</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stats-tab" class="tab-content">
+                <div class="panel">
+          
+                    <h3 data-lang-key="statistics">📊 Statistiken</h3>
+                    <div class="stats-grid" id="statsGrid"></div>
+                </div>
+            </div>
+            
+            <div id="help-tab" class="tab-content">
+            
+                <div class="panel">
+                    <h3 data-lang-key="helpTitle">Bedienungsanleitung</h3>
+                    <div class="help-content" id="helpContent">
+                        </div>
+ 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="notification-area"></div>
+
+    <script>
+        // --- Globale Variablen & Konstanten ---
+        const getEl = (id) => document.getElementById(id);
+        const defaultKeywords = 'Eilmeldung,Breaking,Urgent,Sondermeldung,Live Update';
+        const defaultSources = [
+            { url: 'https://www.tagesschau.de/xml/rss2', title: 'Tagesschau', category: 'germany', trust: 'high' },
+            { url: 'https://www.spiegel.de/schlagzeilen/index.rss', title: 'Spiegel Online', category: 'germany', trust: 'high' },
+            { url: 'https://www.deutschlandfunk.de/die-nachrichten.353.de.rss', title: 'Deutschlandfunk', category: 'germany', trust: 'high' },
+            { url: 'https://www.tagesschau.de/inland/innenpolitik/index.xml', title: 'Tagesschau Innenpolitik', category: 'politics', trust: 'high' },
+            { url: 'https://feeds.foxnews.com/foxnews/politics', title: 'Fox News Politics', category: 'politics', trust: 'review' },
+            { url: 'https://rss.cnn.com/rss/cnn_allpolitics.rss', title: 'CNN Politics', category: 'politics', trust: 'review' },
+            { url: 'https://www.berliner-zeitung.de/feed.xml', title: 'Berliner Zeitung', category: 'berlin', trust: 'normal' },
+            { url: 'https://www.tagesspiegel.de/content/tagesspiegel/feed.xml', title: 'Tagesspiegel', category: 'berlin', trust: 'normal' },
+            { url: 'https://www.euractiv.com/feed/', title: 'Euractiv', category: 'eu', trust: 'high' },
+            { url: 'https://www.presseportal.de/rss/polizei.rss2', title: 'Presseportal Polizei', category: 'police', trust: 'normal' },
+            { url: 'https://feeds.npr.org/1003/rss.xml', title: 'NPR News', category: 'usa', trust: 'high'},
+            { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', title: 'BBC World', category: 'world', trust: 'high' },
+            { url: 'https://feeds.reuters.com/Reuters/worldNews', title: 'Reuters World', category: 'world', trust: 'high' },
+            { url: 'https://www.reuters.com/news/archive/world-news.zip/world-news/feed/', title: 'Reuters Conflict', category: 'war', trust: 'high' },
+            { url: 'https://www.aljazeera.com/xml/rss/all.xml', title: 'Al Jazeera', category: 'war', trust: 'review' },
+            { url: 'https://www.heise.de/rss/heise-atom.xml', title: 'Heise Online', category: 'tech', trust: 'high' },
+            { url: 'https://www.heise.de/ct/uplink/uplink.rss', title: "c't uplink", category: 'tech', trust: 'high' },
+            { url: 'https://techcrunch.com/feed/', title: 'TechCrunch', category: 'tech', trust: 'normal' },
+            { url: 'http://www.kicker.de/news/rss/startseite', title: 'Kicker', category: 'sport', trust: 'normal' },
+            { url: 'https://www.gala.de/feed/rss/stars/', title: 'Gala.de', category: 'gossip', trust: 'low' }
+        ];
+        let sources = [];
+        let bookmarks = [];
+        let newsData = [];
+        let portfolio = [];
+        let activeCategories = ['all'];
+        let refreshIntervalTimer = null;
+        let currentLang = 'de';
+        let financeDataLoaded = false;
+        let mockStockData = {};
+        
+        const translations = {
+            'de': {
+                appTitle: "🎨 Playful News Feeder",
+                tabNews: "📰 Nachrichten", tabFinance: "💰 Finanzen", tabSources: "🔧 Quellen", tabBookmarks: "🔖 Bookmarks", tabSettings: "⚙️ Einstellungen", tabStats: "📊 Statistiken", tabHelp: "❓ Anleitung",
+                viewFilters: "Ansichts-Filter",
+                catAll: "🌍 Alle", catBreaking: "🚨 Eilmeldungen", catPolitics: "🏛️ Politik", catEu: "🇪🇺 EU-Recht", catPolice: "🚓 Polizei", catWorld: "🌍 Welt", catWar: "💥 Konflikte", catGossip: "🤫 Gossip", catGermany: "Deutschland", catBerlin: "Berlin", catUsa: "USA", catTech: "Tech", catSport: "Sport",
+                categoryInfo: 'Wählen Sie Filter, um die geladenen Nachrichten anzuzeigen.',
+                searchPlaceholder: "Geladene Artikel durchsuchen...", dateAll: "Alle Zeiten", dateToday: "Letzte 24h", dateWeek: "Letzte 7 Tage", dateMonth: "Letzte 30 Tage", sourceAll: "Alle Quellen",
+                btnLoadNews: "🔄 Nachrichten laden", btnClearDisplay: "🗑️ Anzeige leeren",
+                addSourcePanel: "Neue Quelle hinzufügen", manageSources: "📡 Meine Quellen (Aktivieren/Deaktivieren)", sourceUrlLabel: "RSS-Feed URL:", sourceTitleLabel: "Titel:", sourceTitlePlaceholder: "Anzeigename", categoryLabel: "Kategorie:",
+                trustLabel: "Vertrauenswürdigkeit:", trustHigh: "Vertrauenswürdig", trustNormal: "Normal", trustReview: "Extra prüfen", trustLow: "Eher vermeiden", btnAdd: "➕ Hinzufügen",
+                savedArticles: "🔖 Gespeicherte Artikel", btnDeleteAll: "🗑️ Alle löschen", btnExportJson: "📤 JSON Export", btnExportHtml: "🌐 HTML Export", btnExportCsv: "📊 CSV Export",
+                noBookmarks: "Keine Artikel gespeichert.", bookmarkInfo: "Gespeicherte Artikel bleiben dauerhaft erhalten, bis sie manuell gelöscht werden.",
+                designAndDisplay: "🎨 Design & Anzeige", themeLabel: "Theme:", languageLabel: "Sprache:",
+                behaviorAndAutomation: "⚙️ Verhalten & Automatisierung", autoRefreshLabel: "🔄 Auto-Refresh (Minuten, 0=aus):", maxArticlesLabel: "📰 Max Artikel pro Quelle:",
+                breakingKeywordsLabel: "🚨 Eilmeldungen-Keywords (kommagetrennt):", notificationsLabel: "📧 Benachrichtigungen:", notifyNone: "Keine", notifyBreaking: "Nur Eilmeldungen", notifyAll: "Alle neuen Artikel",
+                soundLabel: "🔊 Sound bei neuen Artikeln:", dataManagement: "📁 Daten-Management", btnImportSources: "📂 Quellen importieren", btnExportSources: "📤 Quellen exportieren", btnResetApp: "🔄 App zurücksetzen",
+                statistics: "📊 Statistiken", initialMessage: 'Klicken Sie auf "Nachrichten laden", um zu starten.',
+                articlesLoaded: "Artikel geladen", sourcesCount: "Quellen", bookmarksCount: "Bookmarks", breakingCount: "Eilmeldungen", activeSources: "Aktive Quellen",
+                breakingNewsBadge: "EILMELDUNG", save: "Speichern", saved: "Gespeichert", archive: "Archiv", delete: "Löschen",
+                loadingMessage: (count) => `📡 Lade Nachrichten von ${count} aktiven Quellen...`, noArticlesFound: "Keine Artikel von aktiven Quellen gefunden. Bitte aktivieren Sie Quellen im 'Quellen'-Tab.", loadError: (msg) => `Fehler beim Laden: ${msg}`,
+                noArticlesForFilter: "Keine Artikel entsprechen den aktuellen Filtern.", displayCleared: "Anzeige geleert.",
+                confirmReset: "Bist du sicher, dass du ALLE Quellen, Bookmarks und Einstellungen zurücksetzen möchtest?", appReset: "App-Einstellungen zurückgesetzt.",
+                sourceAdded: "Quelle hinzugefügt!", sourceRemoved: "Quelle entfernt.", sourceEnabled: "Quelle aktiviert.", sourceDisabled: "Quelle deaktiviert.", confirmRemoveSource: "Quelle wirklich entfernen?",
+                confirmClearBookmarks: "Wirklich alle Bookmarks löschen?", allBookmarksCleared: "Alle Bookmarks gelöscht.",
+                sourcesExported: "Quellen exportiert!", noBookmarksToExport: "Keine Bookmarks zum Exportieren vorhanden.", bookmarksExportedAs: (format) => `Bookmarks als ${format.toUpperCase()} exportiert!`,
+                confirmImport: (count) => `Sollen ${count} Quellen importiert und bestehende ersetzt werden?`, importSuccess: "Quellen erfolgreich importiert!", importError: (msg) => `Importfehler: ${msg}`,
+                autoRefreshEnabled: (min) => `Auto-Refresh alle ${min} Minuten aktiviert.`, notificationNewArticles: (count, breaking) => `${count} neue Artikel geladen (${breaking} Eilmeldungen)!`,
+                trustHighTitle: "Vertrauenswürdige Quelle", trustReviewTitle: "Quelle extra prüfen", trustLowTitle: "Wenig vertrauenswürdige Quelle",
+                cryptoPrices: "Kryptowährungen", loadingPrices: "Lade Kurse...",
+                helpTitle: "Bedienungsanleitung",
+                suggestedSources: "Vorschlagsquellen", suggestedSourcesInfo: "Klicken Sie auf '➕', um eine Quelle zu Ihrer Liste hinzuzufügen.",
+                readMore: "[ Mehr lesen ]", readLess: "[ Weniger anzeigen ]",
+                stockPortfolio: "Mein Aktien-Portfolio", addStockBtn: "Hinzufügen",
+                helpContent: `<h4>Grundlagen</h4><p>Diese App sammelt Nachrichten aus verschiedenen RSS-Feeds, die Sie selbst verwalten können.</p><ul><li><b>Nachrichten laden:</b> Klicken Sie auf den Button im "Nachrichten"-Tab, um die neuesten Artikel von allen <i>aktivierten</i> Quellen zu laden.</li><li><b>Tabs:</b> Wechseln Sie zwischen den verschiedenen Bereichen der App über die Leiste oben.</li></ul><h4>Quellen verwalten (Tab: 🔧 Quellen)</h4><p>Hier ist das Herzstück Ihrer Nachrichtensammlung.</p><ul><li><b>Vorschlagsquellen:</b> Wählen Sie aus einer vorsortierten Liste von Feeds und fügen Sie diese mit einem Klick auf '➕' zu Ihren Quellen hinzu.</li><li><b>Manuell Hinzufügen:</b> Geben Sie die URL eines RSS-Feeds, einen Namen und eine Kategorie ein, um eine eigene Quelle hinzuzufügen.</li><li><b>Meine Quellen:</b> Aktivieren/Deaktivieren Sie Ihre hinzugefügten Quellen mit der Checkbox. Nur Quellen mit einem Haken werden geladen.</li></ul><h4>Nachrichten filtern (Tab: ⚙️ Einstellungen)</h4><p>Nachdem Sie Nachrichten geladen haben, können Sie die Anzeige hier verfeinern.</p><ul><li><b>Kategorie-Buttons:</b> Wählen Sie eine oder mehrere Kategorien, um nur Artikel aus diesen Bereichen zu sehen.</li><li><b>Suchfeld:</b> Geben Sie einen Suchbegriff ein, um Titel und Beschreibungen zu durchsuchen.</li></ul>`
+            },
+            'en': { // Shortened for brevity
+                appTitle: "🎨 Playful News Feeder",
+                suggestedSources: "Suggested Sources", suggestedSourcesInfo: "Click '➕' to add a source to your list.",
+            }
+        };
+
+        // --- Initialisierung & Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            setupEventListeners();
+            renderAll();
+            setLanguage(currentLang);
+        });
+        function setLanguage(lang) {
+            currentLang = lang; document.documentElement.lang = lang;
+            localStorage.setItem('newsLanguage', lang); getEl('languageSelector').value = lang;
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.dataset.langKey; const translation = T(key);
+                if (key === 'helpContent') {
+                    el.innerHTML = translation;
+                } else if (typeof translation === 'string') {
+                    if (el.placeholder !== undefined) el.placeholder = translation;
+                    else if (el.title !== undefined && !el.classList.contains('theme-btn')) el.title = translation;
+                    else el.innerHTML = translation;
+                }
+            });
+            renderAll();
+        }
+
+        function T(key, ...args) {
+            const langDict = translations[currentLang] || translations['de'];
+            const fallbackDict = translations['de'];
+            let translation = langDict[key] || fallbackDict[key] || key;
+            return typeof translation === 'function' ? translation(...args) : translation;
+        }
+        
+        function setupEventListeners() {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.addEventListener('click', (e) => {
+                const tabId = e.currentTarget.dataset.tab;
+                showTab(tabId);
+                if (tabId === 'finance' && !financeDataLoaded) loadFinanceData();
+            }));
+            getEl('category-selector-container').addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-btn')) {
+                    toggleCategory(e.target.dataset.category);
+                }
+            });
+            getEl('refreshInterval').addEventListener('change', setupAutoRefresh);
+            getEl('sourceListContainer').addEventListener('click', handleSourceListClick);
+        }
+
+        function loadSettings() {
+            setTheme(localStorage.getItem('newsTheme') || 'dark');
+            let loadedSources = JSON.parse(localStorage.getItem('newsSources')) || [];
+            if (loadedSources.length === 0) {
+                 loadedSources = defaultSources.map(s => ({...s, id: self.crypto.randomUUID(), enabled: true }));
+            }
+            sources = loadedSources.map(s => ({ ...s, id: s.id || self.crypto.randomUUID(), enabled: s.enabled !== undefined ? s.enabled : true }));
+            bookmarks = JSON.parse(localStorage.getItem('newsBookmarks')) || [];
+            portfolio = JSON.parse(localStorage.getItem('newsPortfolio')) || [];
+            getEl('refreshInterval').value = localStorage.getItem('newsRefreshInterval') || '0';
+            getEl('maxArticles').value = localStorage.getItem('newsMaxArticles') || '15';
+            getEl('breakingKeywords').value = localStorage.getItem('newsKeywords') || defaultKeywords;
+            getEl('notificationSettings').value = localStorage.getItem('newsNotifications') || 'none';
+            getEl('soundEnabled').checked = localStorage.getItem('newsSound') === 'true';
+            currentLang = localStorage.getItem('newsLanguage') || 'de';
+            setupAutoRefresh();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('newsTheme', document.documentElement.dataset.theme);
+            localStorage.setItem('newsSources', JSON.stringify(sources));
+            localStorage.setItem('newsBookmarks', JSON.stringify(bookmarks));
+            localStorage.setItem('newsPortfolio', JSON.stringify(portfolio));
+            localStorage.setItem('newsRefreshInterval', getEl('refreshInterval').value);
+            localStorage.setItem('newsMaxArticles', getEl('maxArticles').value);
+            localStorage.setItem('newsKeywords', getEl('breakingKeywords').value);
+            localStorage.setItem('newsNotifications', getEl('notificationSettings').value);
+            localStorage.setItem('newsSound', getEl('soundEnabled').checked);
+            localStorage.setItem('newsLanguage', currentLang);
+        }
+        
+        function resetSettings() { if (confirm(T('confirmReset'))) { localStorage.clear();
+            window.location.reload(); } }
+        
+        function renderAll() {
+            renderSources();
+            renderSuggestedSources();
+            renderBookmarks();
+            renderNews(false);
+            renderPortfolio();
+            updateStats();
+            populateSourceFilter();
+            getEl('helpContent').innerHTML = T('helpContent');
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content.active, .nav-tab.active').forEach(el => el.classList.remove('active'));
+            getEl(`${tabId}-tab`).classList.add('active');
+            document.querySelector(`.nav-tab[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        function setTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            document.querySelectorAll('.theme-btn.active').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.theme-btn[data-theme="${themeName}"]`).classList.add('active');
+            saveSettings();
+        }
+
+        function updateStats() {
+            const statsGrid = getEl('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-item"><div class="stat-number">${newsData.length}</div><div>${T('articlesLoaded')}</div></div>
+                <div class="stat-item"><div class="stat-number">${sources.length}</div><div>${T('sourcesCount')}</div></div>
+                <div class="stat-item"><div class="stat-number">${sources.filter(s => s.enabled).length}</div><div>${T('activeSources')}</div></div>
+                <div class="stat-item"><div class="stat-number">${bookmarks.length}</div><div>${T('bookmarksCount')}</div></div>
+                <div class="stat-item"><div class="stat-number">${newsData.filter(item => item.isBreaking).length}</div><div>${T('breakingCount')}</div></div>
+            `;
+        }
+        
+        function showNotification(message, type = 'success', duration = 3000) {
+            const area = getEl('notification-area');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            area.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.addEventListener('transitionend', () => notification.remove());
+            }, duration);
+        }
+
+        async function loadAllNews() {
+            const container = getEl('newsContainer');
+            const enabledSources = sources.filter(s => s.enabled);
+            if (enabledSources.length === 0) {
+                container.innerHTML = `<div class="info-message">${T('noArticlesFound')}</div>`;
+                return;
+            }
+            container.innerHTML = `<div class="loading">${T('loadingMessage', enabledSources.length)}</div>`;
+            const fetchPromises = enabledSources.map(source => fetchNewsFromSource(source).catch(e => { console.error(`Error with source ${source.title}:`, e); return []; }));
+            try {
+                const results = await Promise.all(fetchPromises);
+                const newArticles = results.flat();
+                newsData = newArticles.sort((a, b) => b.timestamp - a.timestamp);
+                populateSourceFilter();
+                renderNews(false);
+            } catch (error) {
+                container.innerHTML = `<div class="info-message error">${T('loadError', error.message)}</div>`;
+            }
+        }
+
+        async function fetchNewsFromSource(source) {
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const response = await fetch(`${proxyUrl}${encodeURIComponent(source.url)}`);
+            if (!response.ok) throw new Error(`HTTP error ${response.status} for ${source.title}`);
+            const str = await response.text();
+            const data = new window.DOMParser().parseFromString(str, "text/xml");
+            const items = data.querySelectorAll("item, entry");
+            const breakingKeywords = (getEl('breakingKeywords').value || defaultKeywords).toLowerCase().split(',').map(k => k.trim()).filter(Boolean);
+            const maxArticles = parseInt(getEl('maxArticles').value, 10);
+            return Array.from(items).slice(0, maxArticles).map(item => {
+                const title = item.querySelector("title")?.textContent || '';
+                const link = item.querySelector("link")?.getAttribute('href') || item.querySelector("link")?.textContent || '';
+                const fullDescriptionHTML = item.querySelector("description, summary, content")?.textContent || '';
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = fullDescriptionHTML;
+                const fullDescriptionText = tempDiv.textContent || tempDiv.innerText || "";
+                const shortDescription = fullDescriptionText.substring(0, 200) + (fullDescriptionText.length > 200 ? '...' : '');
+                const image = item.querySelector("enclosure[url]")?.getAttribute('url') || item.querySelector("media\\:content[url]")?.getAttribute('url') || (fullDescriptionHTML.match(/<img[^>]+src="([^">]+)"/)?.[1] || null);
+                const pubDate = item.querySelector("pubDate, published, updated")?.textContent || new Date().toISOString();
+                const timestamp = new Date(pubDate).getTime();
+                return { 
+                    id: self.crypto.randomUUID(), title, link, 
+                    description_short: shortDescription, 
+                    description_full: fullDescriptionText, 
+                    image: image,
+                    source: source.title, category: source.category, trust: source.trust, timestamp, 
+                    isBreaking: breakingKeywords.some(kw => title.toLowerCase().includes(kw)) 
+                };
+            });
+        }
+        
+        function renderNews(switchToNewsTab = true) {
+            const container = getEl('newsContainer');
+            let filteredArticles = [...newsData];
+            if (!activeCategories.includes('all')) {
+                if (activeCategories.includes('breaking')) filteredArticles = filteredArticles.filter(a => a.isBreaking);
+                else filteredArticles = filteredArticles.filter(a => activeCategories.some(ac => a.category === ac));
+            }
+            const searchTerm = getEl('searchFilter').value.toLowerCase();
+            if (searchTerm) filteredArticles = filteredArticles.filter(a => a.title.toLowerCase().includes(searchTerm) || a.description_full.toLowerCase().includes(searchTerm));
+            const dateFilter = getEl('dateFilter').value;
+            if (dateFilter !== 'all') {
+                const now = Date.now();
+                let timeLimit;
+                if (dateFilter === 'today') timeLimit = now - 24 * 60 * 60 * 1000;
+                else if (dateFilter === 'week') timeLimit = now - 7 * 24 * 60 * 60 * 1000;
+                else if (dateFilter === 'month') timeLimit = now - 30 * 24 * 60 * 60 * 1000;
+                filteredArticles = filteredArticles.filter(a => a.timestamp >= timeLimit);
+            }
+            const sourceFilter = getEl('sourceFilter').value;
+            if (sourceFilter !== 'all') filteredArticles = filteredArticles.filter(a => a.source === sourceFilter);
+            const trustIndicators = { high: `<span class="trust-indicator trust-high" title="${T('trustHighTitle')}">✔️</span>`, review: `<span class="trust-indicator trust-review" title="${T('trustReviewTitle')}">⚠️</span>`, low: `<span class="trust-indicator trust-low" title="${T('trustLowTitle')}">❌</span>`, };
+            const grid = document.createElement('div');
+            grid.className = 'news-grid';
+            filteredArticles.forEach(article => {
+                const isBookmarked = bookmarks.some(b => b.link === article.link);
+                const newsItem = document.createElement('div');
+                newsItem.className = `news-item ${article.isBreaking ? 'breaking' : ''}`;
+                
+                const imageHtml = article.image ? `<img src="${article.image}" class="news-item-image" alt="Article image" onerror="this.style.display='none'">` : '';
+                const readMoreHtml = article.description_full.length > 200 ? `<span class="read-more-btn" onclick="toggleArticleContent(this, '${article.id}')">${T('readMore')}</span>` : '';
+
+                newsItem.innerHTML = `
+                    ${article.isBreaking ? `<div class="breaking-badge">${T('breakingNewsBadge')}</div>` : ''}
+                    ${imageHtml}
+                    <div class="news-content">
+                        <h3><a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a></h3>
+                        <div class="news-meta">
+                            <span class="news-source">${article.source}${trustIndicators[article.trust] || ''}</span>
+                            <span>${new Date(article.timestamp).toLocaleString(currentLang)}</span>
+                        </div>
+                        <p data-article-id="${article.id}">${article.description_short}</p>
+                        ${readMoreHtml}
+                        <div class="news-actions">
+                            <button class="btn-warning ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark(this, '${article.id}')">${isBookmarked ? `🔖 ${T('saved')}` : `🔖 ${T('save')}`}</button>
+                            <button class="btn-secondary" onclick="openWebArchive('${article.link}')">🗄️ ${T('archive')}</button>
+                        </div>
+                    </div>`;
+                grid.appendChild(newsItem);
+            });
+
+            if (filteredArticles.length === 0 && newsData.length > 0) container.innerHTML = `<div class="info-message">${T('noArticlesForFilter')}</div>`;
+            else if (newsData.length === 0) container.innerHTML = `<div class="info-message" data-lang-key="initialMessage">${T('initialMessage')}</div>`;
+            else container.innerHTML = ''; container.appendChild(grid);
+            
+            updateStats();
+            if (switchToNewsTab) showTab('news');
+        }
+
+        function toggleArticleContent(button, articleId) {
+            const article = newsData.find(a => a.id === articleId);
+            if (!article) return;
+            const pElement = document.querySelector(`p[data-article-id="${articleId}"]`);
+            if (pElement) {
+                const isShort = pElement.innerHTML === article.description_short;
+                pElement.innerHTML = isShort ? article.description_full : article.description_short;
+                button.textContent = isShort ? T('readLess') : T('readMore');
+            }
+        }
+
+        function clearAllNews() { newsData = []; renderNews(false); showNotification(T('displayCleared'), 'info');
+        }
+
+        function toggleCategory(category) {
+            const categoryBtns = document.querySelectorAll('#category-selector-container .category-btn');
+            const clickedBtn = document.querySelector(`#category-selector-container .category-btn[data-category="${category}"]`);
+            if (category === 'all' || category === 'breaking') {
+                activeCategories = [category];
+                categoryBtns.forEach(btn => btn.classList.remove('active'));
+                clickedBtn.classList.add('active');
+            } else {
+                activeCategories = activeCategories.filter(c => c !== 'all' && c !== 'breaking');
+                const index = activeCategories.indexOf(category);
+                if (index > -1) activeCategories.splice(index, 1); else activeCategories.push(category);
+                categoryBtns.forEach(btn => { activeCategories.includes(btn.dataset.category) ? btn.classList.add('active') : btn.classList.remove('active'); });
+                document.querySelector('#category-selector-container .category-btn[data-category="all"]').classList.remove('active');
+                document.querySelector('#category-selector-container .category-btn[data-category="breaking"]').classList.remove('active');
+                if (activeCategories.length === 0) { activeCategories = ['all']; document.querySelector('#category-selector-container .category-btn[data-category="all"]').classList.add('active');
+                }
+            }
+            getEl('searchFilter').value = '';
+            renderNews();
+        }
+        
+        function populateSourceFilter() {
+            const sourceFilter = getEl('sourceFilter');
+            const currentVal = sourceFilter.value;
+            sourceFilter.innerHTML = `<option value="all">${T('sourceAll')}</option>`;
+            const uniqueSources = [...new Set(newsData.map(a => a.source))];
+            uniqueSources.sort().forEach(sourceName => {
+                const option = document.createElement('option');
+                option.value = sourceName;
+                option.textContent = sourceName;
+                sourceFilter.appendChild(option);
+            });
+            sourceFilter.value = currentVal;
+        }
+        
+        function setupAutoRefresh() {
+            if (refreshIntervalTimer) clearInterval(refreshIntervalTimer);
+            const intervalMinutes = parseInt(getEl('refreshInterval').value, 10);
+            if (intervalMinutes > 0) {
+                refreshIntervalTimer = setInterval(loadAllNews, intervalMinutes * 60 * 1000);
+                showNotification(T('autoRefreshEnabled', intervalMinutes), 'info');
+            }
+            saveSettings();
+        }
+
+        function renderSources() {
+            const container = getEl('sourceListContainer');
+            container.innerHTML = '';
+            if (sources.length === 0) {
+                container.innerHTML = `<div class="info-message" style="padding: 20px;">Keine Quellen hinzugefügt.</div>`;
+                return;
+            }
+            sources.forEach(source => {
+                const item = document.createElement('div');
+                item.className = 'source-list-item';
+                item.innerHTML = `
+                    <input type="checkbox" id="cb-${source.id}" data-id="${source.id}" ${source.enabled ? 'checked' : ''}>
+                    <label for="cb-${source.id}" class="source-list-item-label">
+                        <span class="source-list-item-title">${source.title}</span>
+                        <span class="source-list-item-category">${source.category}</span>
+                    </label>
+                    <button class="remove-btn" data-id="${source.id}" title="${T('delete')}">X</button>
+                `;
+                container.appendChild(item);
+            });
+            updateStats();
+        }
+
+        function renderSuggestedSources() {
+            const container = getEl('suggestedSourcesContainer');
+            container.innerHTML = '';
+            const groupedSources = defaultSources.reduce((acc, source) => {
+                const category = source.category || 'general';
+                if (!acc[category]) acc[category] = [];
+                acc[category].push(source);
+                return acc;
+            }, {});
+            for (const category in groupedSources) {
+                const categoryKey = `cat${category.charAt(0).toUpperCase() + category.slice(1)}`;
+                const categoryName = T(categoryKey) || category;
+                const categoryTitle = document.createElement('h4');
+                categoryTitle.textContent = categoryName;
+                container.appendChild(categoryTitle);
+                
+                const list = document.createElement('div');
+                groupedSources[category].forEach(source => {
+                    const alreadyAdded = sources.some(s => s.url === source.url);
+                    const item = document.createElement('div');
+                    item.className = 'suggested-source-item';
+                    item.innerHTML = `
+                        <span>${source.title}</span>
+                        <button ${alreadyAdded ? 'disabled' : ''} onclick="addSourceFromSuggestion(this, '${source.url}', '${source.title}', '${source.category}', '${source.trust}')">
+                            ${alreadyAdded ? '✔️' : '➕'}
+                        </button>
+                    `;
+                    list.appendChild(item);
+                });
+                container.appendChild(list);
+            }
+        }
+        
+        function handleSourceListClick(event) {
+            const target = event.target;
+            const sourceId = target.dataset.id;
+            if (!sourceId) return;
+            if (target.type === 'checkbox') {
+                toggleSourceEnabled(sourceId);
+            } else if (target.classList.contains('remove-btn')) {
+                removeSource(sourceId);
+            }
+        }
+        
+        function toggleSourceEnabled(id) {
+            const source = sources.find(s => s.id === id);
+            if (source) {
+                source.enabled = !source.enabled;
+                saveSettings();
+                renderSources();
+                showNotification(source.enabled ? T('sourceEnabled') : T('sourceDisabled'), 'info');
+            }
+        }
+
+        function addSourceFromSuggestion(button, url, title, category, trust) {
+            if (sources.some(s => s.url === url)) return;
+            sources.push({ id: self.crypto.randomUUID(), url, title, category, trust, enabled: true });
+            saveSettings();
+            renderSources();
+            button.textContent = '✔️';
+            button.disabled = true;
+            showNotification(T('sourceAdded'), 'success');
+        }
+
+        function addSource() {
+            const url = getEl('sourceUrl').value.trim();
+            const title = getEl('sourceTitle').value.trim();
+            const category = getEl('sourceCategory').value;
+            const trust = getEl('sourceTrust').value;
+            if (!url || !title) return;
+            if (sources.some(s => s.url === url)) {
+                showNotification("Quelle bereits vorhanden!", 'info');
+                return;
+            }
+            sources.push({ id: self.crypto.randomUUID(), url, title, category, trust, enabled: true });
+            saveSettings();
+            renderSources();
+            renderSuggestedSources();
+            getEl('sourceUrl').value = getEl('sourceTitle').value = '';
+            showNotification(T('sourceAdded'), 'success');
+        }
+
+        function removeSource(id) {
+            if (confirm(T('confirmRemoveSource'))) {
+                sources = sources.filter(s => s.id !== id);
+                saveSettings();
+                renderSources();
+                renderSuggestedSources();
+                showNotification(T('sourceRemoved'), 'success');
+            }
+        }
+
+        function renderBookmarks() {
+            const list = getEl('bookmarksList');
+            if (bookmarks.length === 0) {
+                list.innerHTML = `<div class="info-message">${T('noBookmarks')}</div>`;
+                return;
+            }
+            list.innerHTML = '';
+            bookmarks.forEach(bookmark => {
+                const item = document.createElement('div');
+                item.className = 'bookmark-item';
+                item.innerHTML = `
+                    <div class="bookmark-content">
+                        <a href="${bookmark.link}" target="_blank" rel="noopener noreferrer">${bookmark.title}</a>
+                        <div class="bookmark-info">${bookmark.source} - ${new Date(bookmark.timestamp).toLocaleString(currentLang)}</div>
+                    </div>
+                    <div class="bookmark-actions">
+                        <button onclick="removeBookmark('${bookmark.id}')" class="btn-danger">${T('delete')}</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        function toggleBookmark(button, articleId) {
+            const article = newsData.find(a => a.id === articleId) || bookmarks.find(b => b.id === articleId);
+            if (!article) return;
+            const bookmarkIndex = bookmarks.findIndex(b => b.link === article.link);
+            if (bookmarkIndex > -1) {
+                bookmarks.splice(bookmarkIndex, 1);
+                button.classList.remove('bookmarked');
+                button.innerHTML = `🔖 ${T('save')}`;
+            } else {
+                bookmarks.push({ ...article, id: self.crypto.randomUUID() });
+                button.classList.add('bookmarked');
+                button.innerHTML = `🔖 ${T('saved')}`;
+            }
+            saveSettings();
+            renderBookmarks();
+            updateStats();
+        }
+
+        function removeBookmark(id) {
+            bookmarks = bookmarks.filter(b => b.id !== id);
+            saveSettings();
+            renderBookmarks();
+            renderNews(false);
+        }
+
+        function clearBookmarks() {
+            if (bookmarks.length > 0 && confirm(T('confirmClearBookmarks'))) {
+                bookmarks = [];
+                saveSettings();
+                renderBookmarks();
+                renderNews(false);
+                showNotification(T('allBookmarksCleared'), 'success');
+            }
+        }
+
+        function openWebArchive(url) { window.open(`https://web.archive.org/web/*/${encodeURIComponent(url)}`, '_blank');
+        }
+
+        async function loadFinanceData() {
+            if (financeDataLoaded) return;
+            const container = getEl('cryptoPricesContainer');
+            container.innerHTML = `<div class="loading">${T('loadingPrices')}</div>`;
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,ripple,cardano,solana&vs_currencies=eur,usd');
+                const data = await response.json();
+                container.innerHTML = '';
+                const cryptoMap = {
+                    bitcoin: { name: 'Bitcoin', logo: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png' },
+                    ethereum: { name: 'Ethereum', logo: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png' },
+                    ripple: { name: 'XRP', logo: 'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png' },
+                    cardano: { name: 'Cardano', logo: 'https://assets.coingecko.com/coins/images/975/large/cardano.png' },
+                    solana: { name: 'Solana', logo: 'https://assets.coingecko.com/coins/images/4128/large/solana.png' }
+                };
+                for (const [id, prices] of Object.entries(data)) {
+                    const item = document.createElement('div');
+                    item.className = 'crypto-item';
+                    item.innerHTML = `
+                        <img src="${cryptoMap[id].logo}" alt="${cryptoMap[id].name} logo">
+                        <span class="crypto-name">${cryptoMap[id].name}</span>
+                        <div class="crypto-price">
+                            <div class="price-eur">${prices.eur.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}</div>
+                            <div class="price-usd">${prices.usd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                }
+                financeDataLoaded = true;
+            } catch (error) {
+                console.error("Crypto API Error:", error);
+                container.innerHTML = `<div class="info-message error">Konnte Krypto-Kurse nicht laden.</div>`;
+            }
+        }
+
+        function addStock() {
+            const symbolInput = getEl('stockSymbol');
+            const symbol = symbolInput.value.trim().toUpperCase();
+            if (symbol && !portfolio.includes(symbol)) {
+                portfolio.push(symbol);
+                saveSettings();
+                renderPortfolio();
+                symbolInput.value = '';
+            }
+        }
+
+        function removeStock(symbol) {
+            portfolio = portfolio.filter(s => s !== symbol);
+            delete mockStockData[symbol]; // Clear cached mock data
+            saveSettings();
+            renderPortfolio();
+        }
+
+        function fetchMockStockPrice(symbol) {
+            if (mockStockData[symbol]) {
+                return mockStockData[symbol];
+            }
+            const price = parseFloat((Math.random() * 2000 + 50).toFixed(2));
+            const change = parseFloat(((Math.random() - 0.5) * 20).toFixed(2));
+            const data = { price, change };
+            mockStockData[symbol] = data;
+            return data;
+        }
+
+        function renderPortfolio() {
+            const container = getEl('stockPortfolioContainer');
+            if (portfolio.length === 0) {
+                container.innerHTML = `<div class="info-message" style="padding: 10px 0; font-size: 0.9em;">Keine Aktien im Portfolio.</div>`;
+                return;
+            }
+            container.innerHTML = '';
+            portfolio.forEach(symbol => {
+                const stockData = fetchMockStockPrice(symbol);
+                const item = document.createElement('div');
+                item.className = 'stock-item';
+                const changeClass = stockData.change >= 0 ? 'price-up' : 'price-down';
+                const changeSign = stockData.change >= 0 ? '▲ +' : '▼ ';
+                
+                item.innerHTML = `
+                    <span class="stock-symbol">${symbol}</span>
+                    <div></div>
+                    <div class="stock-price-info">
+                        <div class="stock-price">${stockData.price.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}</div>
+                        <div class="stock-change ${changeClass}">${changeSign}${Math.abs(stockData.change).toFixed(2)} €</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeStock('${symbol}')">X</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function exportData(type) {
+            if (type === 'sources') {
+                downloadFile(JSON.stringify(sources, null, 2), 'news-feeder-sources.json', 'application/json');
+                showNotification(T('sourcesExported'), 'success');
+            }
+        }
+
+        function exportBookmarks(format) {
+            if (bookmarks.length === 0) {
+                showNotification(T('noBookmarksToExport'), 'error');
+                return;
+            }
+            let content, fileName, contentType;
+            if (format === 'json') {
+                content = JSON.stringify(bookmarks, null, 2);
+                fileName = 'bookmarks.json';
+                contentType = 'application/json';
+            } else if (format === 'html') {
+                content = `<!DOCTYPE html><html><head><title>Bookmarks</title><style>body{font-family:sans-serif;line-height:1.6;}li{margin-bottom:10px;}</style></head><body><h1>Bookmarks</h1><ul>${bookmarks.map(b => `<li><a href="${b.link}">${b.title}</a> (${b.source})</li>`).join('')}</ul></body></html>`;
+                fileName = 'bookmarks.html';
+                contentType = 'text/html';
+            } else if (format === 'csv') {
+                const header = 'Title,Link,Source,Date\n';
+                const rows = bookmarks.map(b => `"${b.title.replace(/"/g, '""')}","${b.link}","${b.source}","${new Date(b.timestamp).toISOString()}"`).join('\n');
+                content = header + rows;
+                fileName = 'bookmarks.csv';
+                contentType = 'text/csv';
+            }
+            downloadFile(content, fileName, contentType);
+           
+            showNotification(T('bookmarksExportedAs', format), 'success');
+        }
+
+        function importData(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (type === 'sources' && Array.isArray(data)) {
+                        if (confirm(T('confirmImport', data.length))) {
+                            sources = data.map(s => ({ ...s, enabled: s.enabled !== undefined ? s.enabled : true }));
+                            saveSettings();
+                            renderAll();
+                            showNotification(T('importSuccess'), 'success');
+                        }
+                    }
+                } catch (err) {
+                    showNotification(T('importError', err.message), 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function downloadFile(content, fileName, contentType) {
+            const a = document.createElement("a");
+            const file = new Blob([content], { type: contentType });
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+    </script>
+</body>
+</html>
