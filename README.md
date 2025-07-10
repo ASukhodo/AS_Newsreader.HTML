@@ -31,7 +31,7 @@ Playful News Feeder is a self-contained, single-file news aggregator application
 
 ### Quick Start Guide
 
-1.  **Download:** Get the `Newsreaderv2.html` file.
+1.  **Download:** Get the `START_AS_Newsreader.HTML` file.
 2.  **Open:** Simply open the file in your favorite web browser (like Chrome, Firefox, or Edge).
 3.  **Add Sources:** Navigate to the `🔧 Sources` tab. You can add feeds from the suggestion list with one click or add your own custom RSS feed URLs.
 4.  **Load News:** Go to the `📰 News` tab and click the `🔄 Load News` button.
